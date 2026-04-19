@@ -4,7 +4,11 @@ Hand off tasks to AI coding agents as plain markdown files — one per task, sta
 
 ## Quick start
 
-**In a fresh repo, hand this README to your AI coding agent** (Claude Code, Cursor, Codex, Gemini CLI, etc.) **and say "scaffold Docket here."** The README contains everything the agent needs — folder layout, agent-instructions snippet, and the skill install command — to set you up in one pass. Then queue your first task.
+In a fresh repo, tell your AI coding agent (Claude Code, Cursor, Codex, Gemini CLI, etc.):
+
+> Read https://raw.githubusercontent.com/poteb/Docket/main/SETUP.md and scaffold Docket in this repo.
+
+The agent fetches the setup instructions and sets everything up in one pass. Then queue your first task.
 
 ## What it is
 
@@ -63,63 +67,13 @@ todo  <!-- todo | in progress | blocked | done -->
 <optional; only when status is blocked>
 ````
 
-## Adopting Docket in your project
+## Adopting Docket
 
-1. Paste the snippet below into your project's agent instructions file — `CLAUDE.md` for Claude Code, `AGENTS.md` for Codex and most generic agents, `.cursorrules` for Cursor, `GEMINI.md` for Gemini CLI.
-2. Create empty `Tasks/` and `Tasks/done/` folders (drop a `.gitkeep` in `done/` so git tracks it).
-3. Create an empty `Done.md`.
-4. Write your first task at `Tasks/001-whatever.md` using the template above — or use the `add-docket` skill (see below) if you're on Claude Code.
-5. Say "Proceed".
-
-### Snippet to paste
-
-`````markdown
-## Task workflow (Docket)
-
-Tasks live as one file per task under `Tasks/`, named `NNN-short-slug.md` (3-digit zero-padded prefix, e.g. `001-scaffold.md`).
-
-- **The user creates** task files in the main conversation. Initial Status is `todo` with a description of the work.
-- **Execution is always delegated to a sub-agent**, so the main conversation stays free for the user to queue more tasks. When the user says "Proceed", dispatch a sub-agent to take the lowest-numbered `todo` task. "Proceed with task 5" dispatches for that specific task.
-  *(Claude Code: use the `Agent` tool with `subagent_type: general-purpose` and `run_in_background: true`.)*
-- **The sub-agent does the bookkeeping**: Status → `in progress`, append progress/decisions/findings to `## Notes` as it works, Status → `done` when finished, move the file from `Tasks/` to `Tasks/done/`, and append a one-line summary to `Done.md` (newest at bottom, format: `NNN — short description of what was done`).
-- **If the sub-agent needs input**, it sets Status to `blocked`, writes the question in `## Questions`, and returns. The main conversation flags it in chat so the user can answer. Auto-proceed pauses until the user responds.
-- **Auto-proceed**: when a sub-agent finishes a task cleanly (status `done`), immediately dispatch the next-lowest-numbered `todo` task in a fresh sub-agent, with no prompt from the user. Surface a one-line "task N done; starting task N+1" update in chat. Stop auto-proceeding when: (a) no `todo` tasks remain, (b) a task ends `blocked`, (c) the sub-agent errors or fails verification, or (d) the user says "stop" or "pause".
-- **Brief the sub-agent well**: sub-agents start with no conversation context. The dispatch prompt must tell the sub-agent to read its task file at `Tasks/NNN-*.md`, follow these workflow rules, and include any decisions from prior tasks it needs. Point it at relevant files by path.
-
-### Status vocabulary
-`todo` | `in progress` | `blocked` | `done`
-
-### Task file template
-
-````markdown
-# <title>
-
-## Status
-todo  <!-- todo | in progress | blocked | done -->
-
-## Task
-<what needs to be done>
-
-## Notes
-<agent appends progress, decisions, findings as work proceeds>
-
-## Questions
-<optional; only when status is blocked>
-````
-`````
+See [`SETUP.md`](SETUP.md) for step-by-step scaffolding instructions — or use the Quick start above to have an agent do it for you.
 
 ## Optional: the `add-docket` skill
 
-For Claude Code users, Docket ships a project-local skill at [`.claude/skills/add-docket/`](.claude/skills/add-docket/) that automates task creation — it scans `Tasks/` and `Tasks/done/` to pick the next number, derives a kebab-case slug, runs a clarity check on the description (and asks back if anything is vague), and writes the file.
-
-Install it in your project without cloning this repo:
-
-```bash
-curl -sL --create-dirs -o .claude/skills/add-docket/SKILL.md \
-  https://raw.githubusercontent.com/poteb/Docket/main/.claude/skills/add-docket/SKILL.md
-```
-
-Or copy the folder directly from a local clone of this repo.
+For Claude Code users, Docket ships a project-local skill at [`.claude/skills/add-docket/`](.claude/skills/add-docket/) that automates task creation — it scans `Tasks/` and `Tasks/done/` to pick the next number, derives a kebab-case slug, runs a clarity check on the description (and asks back if anything is vague), and writes the file. See [`SETUP.md`](SETUP.md) step 3 for installation.
 
 ## License
 
