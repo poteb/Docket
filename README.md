@@ -2,6 +2,10 @@
 
 Hand off tasks to AI coding agents as plain markdown files — one per task, status and questions tracked inline, git-friendly.
 
+## Quick start
+
+**In a fresh repo, hand this README to your AI coding agent** (Claude Code, Cursor, Codex, Gemini CLI, etc.) **and say "scaffold Docket here."** The README contains everything the agent needs — folder layout, agent-instructions snippet, and the skill install command — to set you up in one pass. Then queue your first task.
+
 ## What it is
 
 Docket is a convention, not a tool. You write tasks into a `Tasks/` folder. Your AI coding agent (Claude Code, Cursor, Codex, Gemini CLI, etc.) picks them up, updates status in the file, logs questions, and moves completed tasks to `Tasks/done/`. No daemon, no UI, no dependencies — just markdown and git.
