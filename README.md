@@ -43,7 +43,7 @@ Chronological order of `Tasks/done/` (by filename) is the completion log — no 
 3. **Execution is always delegated to a sub-agent — never run in the main conversation.** The main conversation stays free for queueing more tasks. When you say "Proceed", a sub-agent picks up the **earliest** `todo` task (smallest filename = oldest-created). "Proceed with `<slug>`" targets a specific one by slug.
 4. **The sub-agent does the bookkeeping**: Status → `in progress` → `done`, appends progress to `## Notes`, and moves the file to `Tasks/done/`. `Tasks/done/` listed chronologically IS the log — no separate file.
 5. **Questions**: the sub-agent sets Status to `blocked`, writes the question in `## Questions`, and returns. The main conversation flags it in chat.
-6. **Auto-proceed**: when a task finishes cleanly, the next `todo` task starts automatically in a fresh sub-agent. Stops on `blocked`, errors, empty queue, or when you say "stop".
+6. **Auto-proceed**: when a task finishes cleanly, the next `todo` task starts automatically in a fresh sub-agent. Stops on `blocked`, errors, empty queue, or when you say `Halt` (let in-flight sub-agent(s) finish first, then no more dispatches) or `stop`/`pause` (cancel in-flight sub-agent(s) immediately; cancelled tasks stay at Status `in progress` for you to revert to `todo`, edit, or delete).
 
 ## Status vocabulary
 
