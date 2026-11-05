@@ -95,11 +95,11 @@ Decides how a task is executed. The tier recipes the sub-agent follows live in [
 | Severity | What it covers | Execution in one line |
 |---|---|---|
 | `trivial` | Small tweaks: a colour, a text/copy change, a config value, a one-line fix with obvious correctness | Just do it, verify (screenshot if visible), auto-merge, done. No grilling, no review chain. |
-| `minor` | A small feature, or a bug fix with real logic, bounded to one area | Grilling → TDD → self-review → independent Claude agent review → ChatGPT/Loom only when risk-triggered → auto-merge. No spec, no plan. |
-| `major` | A big or fuzzy feature, anything cross-cutting, or a design-level change to money / auth / security / data | `feature` skill (spec + plan) with grilling, `doubt-driven-development`, `security-and-hardening`, full review incl. ChatGPT/Loom; merge per the project's merge policy. |
+| `minor` | A small feature, or a bug fix with real logic, bounded to one area | Grilling → TDD → self-review → independent Claude agent review → external-model (ChatGPT) review only when risk-triggered → auto-merge. No spec, no plan. |
+| `major` | A big or fuzzy feature, anything cross-cutting, or a design-level change to money / auth / security / data | `feature` skill (spec + plan) with grilling, `doubt-driven-development`, `security-and-hardening`, full review incl. external-model (ChatGPT) review; merge per the project's merge policy. |
 
 - **Updating**: the user may change Severity at any time. A sub-agent that finds the task bigger than rated raises it, writes why in `## Notes`, and continues under the new tier — or goes `blocked` when the new tier needs grilling that hasn't happened. Lowering Severity is the user's call only.
-- **Project rules still apply on top**: the project's `CLAUDE.md` / memory decides the review *channels* (which model reviews, Loom vs. API), merge gates, worktree rules and round budgets. Severity decides *which steps run*.
+- **Project rules still apply on top**: the project's `CLAUDE.md` / memory decides the review *channels* (which model reviews and how: Loom, API, or a cross-provider sub-agent; the user's global `CLAUDE.md` overrides per machine), merge gates, worktree rules and round budgets. Severity decides *which steps run*.
 
 ## Grilling
 
@@ -151,4 +151,5 @@ These rules govern the whole Docket lifecycle, not just creation:
 ### Dispatching (Claude Code)
 
 - Dispatch with the `Agent` tool, `subagent_type: general-purpose`, `run_in_background: true`. Cancel in-flight sub-agents with `TaskStop`.
+- **External review relay**: a sub-agent that reports `ready for external review at <sha>` (see `SEVERITY.md`) is waiting on you. Run the external-model review through the configured channel (e.g. a cross-provider sub-agent, one new run per round), send the findings back to the same sub-agent with `SendMessage`, and repeat until it is clean. Read the diff yourself before each round. The task is not finished, and auto-proceed does not fire, until the sub-agent reports it merged.
 - **Brief the sub-agent well**: it starts with no conversation context. The dispatch prompt must tell it to read its task file by path, follow the bookkeeping rules above, and execute the task's Severity tier from `~/.claude/skills/add-docket/SEVERITY.md` (re-reading `## Severity` first, since the user may have changed it). Include any decisions from prior tasks it needs. Point it at relevant files by path.
